@@ -18,11 +18,11 @@ public interface GameUserRepository extends JpaRepository<GameUser,Long> {
     @Query("select gameUser from GameUser gameUser where gameUser.user.login = ?#{principal.username}")
     List<GameUser> findByUserIsCurrentUser();
 
-    @Query("select avg(gameUser.points) from GameUser where gameUser.game = :game")
+    @Query("select avg(gameUser.points) from GameUser gameUser where gameUser.game = :game")
     Double gameAvg(@Param("game")Game game);
 
     @Query("select gameUser.game, avg(gameUser.points) from GameUser gameUser" +
-    "group by gameUser order by avg(gameUser.points) desc")
+    " GROUP BY gameUser order by avg(gameUser.points) desc")
 
     List<Object[]> fiveFavouriteGames(Pageable pageable);
 }

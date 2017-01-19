@@ -8,15 +8,15 @@ import com.mycompany.myapp.domain.Game;
 public class GameDTO {
 
     private Game game;
-    private Double avgScore;
+    private Double count;
 
     public GameDTO() {
 
     }
 
-    public GameDTO(Game game, Double avgScore) {
+    public GameDTO(Game game, Double count) {
         this.game = game;
-        this.avgScore = avgScore;
+        this.count = count;
     }
 
 
@@ -28,19 +28,19 @@ public class GameDTO {
         this.game = game;
     }
 
-    public Double getAvgScore() {
-        return avgScore;
+    public Double getCount() {
+        return count;
     }
 
-    public void setAvgScore(Double avgScore) {
-        this.avgScore = avgScore;
+    public void setCount(Double avgScore) {
+        this.count = avgScore;
     }
 
     @Override
     public String toString() {
         return "GameDTO{" +
             "game=" + game +
-            ", avgScore=" + avgScore +
+            ", avgScore=" + count +
             '}';
     }
 }

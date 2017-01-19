@@ -21,7 +21,7 @@ public interface FavUserRepository extends JpaRepository<FavUser,Long> {
     List<Object[]> findTopPlayers();
 
     @Query("select favUser.player, count(favUser) from FavUser favUser" +
-    "group by favUser.player order by count(favUser) desc")
+    " group by favUser.player order by count(favUser) desc")
 
     List <Object[]> findFiveFavouritePlayers(Pageable pageable);
 
