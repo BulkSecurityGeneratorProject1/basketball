@@ -5,7 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.Set;
 
 import com.mycompany.myapp.domain.User;
-import com.mycompany.myapp.service.dto.UserDTO;
+import com.mycompany.myapp.domain.DTO.UserDTO;
 import javax.validation.constraints.Size;
 
 /**

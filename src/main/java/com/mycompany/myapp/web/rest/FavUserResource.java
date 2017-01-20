@@ -1,11 +1,13 @@
 package com.mycompany.myapp.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
+import com.mycompany.myapp.domain.DTO.EvolutionpDTO;
 import com.mycompany.myapp.domain.FavUser;
 
 import com.mycompany.myapp.domain.Player;
 import com.mycompany.myapp.repository.FavUserRepository;
-import com.mycompany.myapp.service.dto.PlayerDTO;
+import com.mycompany.myapp.domain.DTO.PlayerDTO;
+import com.mycompany.myapp.repository.PlayerRepository;
 import com.mycompany.myapp.web.rest.util.HeaderUtil;
 
 import org.slf4j.Logger;
@@ -19,9 +21,14 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * REST controller for managing FavUser.
@@ -34,6 +41,9 @@ public class FavUserResource {
 
     @Inject
     private FavUserRepository favUserRepository;
+
+    @Inject
+    private PlayerRepository playerRepository;
 
     /**
      * POST  /fav-users : Create a new favUser.
@@ -176,6 +186,28 @@ public class FavUserResource {
         }
 
 
+        @GetMapping("/evolution-player")
+        @Timed
+    public ResponseEntity<List<EvolutionpDTO>> evolutionPlayer(Long idPlayer){
+
+            Player p = new Player();
+            p = playerRepository.findOne(idPlayer);
+
+            List<ZonedDateTime> listFav = favUserRepository.favouriteEvolutionPlayer(p);
+            ArrayList<EvolutionpDTO> evolution = new ArrayList<>();
+
+            listFav.parallelStream()
+                .map(zonedDateTime -> zonedDateTime.toLocalDate())
+                .collect(Collectors
+                    .groupingBy(Function.identity(),Collectors.counting()))
+                .forEach((date,count) ->evolution.add(new EvolutionpDTO(date,count)));
+
+            List<EvolutionpDTO> result = evolution.stream()
+                .sorted(Comparator.comparing(EvolutionpDTO::getTime))
+                .collect(Collectors.toList());
+
+            return new ResponseEntity<>(result,HttpStatus.OK);
+        }
 
 
 

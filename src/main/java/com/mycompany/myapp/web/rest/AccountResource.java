@@ -9,7 +9,7 @@ import com.mycompany.myapp.repository.UserRepository;
 import com.mycompany.myapp.security.SecurityUtils;
 import com.mycompany.myapp.service.MailService;
 import com.mycompany.myapp.service.UserService;
-import com.mycompany.myapp.service.dto.UserDTO;
+import com.mycompany.myapp.domain.DTO.UserDTO;
 import com.mycompany.myapp.web.rest.vm.KeyAndPasswordVM;
 import com.mycompany.myapp.web.rest.vm.ManagedUserVM;
 import com.mycompany.myapp.web.rest.util.HeaderUtil;

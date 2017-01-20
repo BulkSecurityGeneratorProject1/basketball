@@ -2,7 +2,7 @@ package com.mycompany.myapp.service.mapper;
 
 import com.mycompany.myapp.domain.Authority;
 import com.mycompany.myapp.domain.User;
-import com.mycompany.myapp.service.dto.UserDTO;
+import com.mycompany.myapp.domain.DTO.UserDTO;
 import org.mapstruct.*;
 
 import java.util.List;

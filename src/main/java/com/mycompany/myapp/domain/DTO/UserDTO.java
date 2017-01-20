@@ -1,4 +1,4 @@
-package com.mycompany.myapp.service.dto;
+package com.mycompany.myapp.domain.DTO;
 
 import com.mycompany.myapp.config.Constants;
 

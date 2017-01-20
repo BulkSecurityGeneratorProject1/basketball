@@ -2,9 +2,12 @@ package com.mycompany.myapp.repository;
 
 import com.mycompany.myapp.domain.FavUser;
 
+import com.mycompany.myapp.domain.Player;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.Param;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
@@ -24,6 +27,12 @@ public interface FavUserRepository extends JpaRepository<FavUser,Long> {
     " group by favUser.player order by count(favUser) desc")
 
     List <Object[]> findFiveFavouritePlayers(Pageable pageable);
+
+    @Query("select favUser.time from FavUser favUSer" +
+    " where favUser.player = :player")
+
+    List<ZonedDateTime> favouriteEvolutionPlayer(@Param("player")Player player);
+
 
 
 }
