@@ -7,6 +7,9 @@ import com.mycompany.myapp.domain.GameUser;
 import com.mycompany.myapp.repository.GameRepository;
 import com.mycompany.myapp.repository.GameUserRepository;
 import com.mycompany.myapp.domain.DTO.GameDTO;
+import com.mycompany.myapp.repository.UserRepository;
+import com.mycompany.myapp.security.SecurityUtils;
+import com.mycompany.myapp.service.GameService;
 import com.mycompany.myapp.web.rest.util.HeaderUtil;
 
 import org.slf4j.Logger;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,13 +43,12 @@ public class GameUserResource {
     @Inject
     private GameRepository gameRepository;
 
-    /**
-     * POST  /game-users : Create a new gameUser.
-     *
-     * @param gameUser the gameUser to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new gameUser, or with status 400 (Bad Request) if the gameUser has already an ID
-     * @throws URISyntaxException if the Location URI syntax is incorrect
-     */
+    @Inject
+    private UserRepository userRepository;
+
+    @Inject
+    private GameService gameService;
+
     @PostMapping("/game-users")
     @Timed
     public ResponseEntity<GameUser> createGameUser(@RequestBody GameUser gameUser) throws URISyntaxException {
@@ -53,21 +56,38 @@ public class GameUserResource {
         if (gameUser.getId() != null) {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert("gameUser", "idexists", "A new gameUser cannot already have an ID")).body(null);
         }
-        GameUser result = gameUserRepository.save(gameUser);
+
+        if(gameService.findOne(gameUser.getGame().getId()) == null){
+            return ResponseEntity.badRequest().
+                headers(HeaderUtil.
+                    createFailureAlert("gameUser","gamenotexists","Game not Exists")).body(null);
+
+        }
+
+
+        gameUser.setUser(userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).get());
+        gameUser.setTime(ZonedDateTime.now());
+
+        Optional<GameUser> gameUserOptional = gameUserRepository.
+            findByUserAndGame(gameUser.getUser(),gameUser.getGame());
+
+        GameUser result = null;
+
+        if (gameUserOptional.isPresent()){
+            result = gameUserOptional.get();
+            result.setPoints(gameUser.getPoints());
+            result.setTime(gameUser.getTime());
+            result = gameUserRepository.save(result);
+        } else{
+            result = gameUserRepository.save(gameUser);
+        }
+
         return ResponseEntity.created(new URI("/api/game-users/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert("gameUser", result.getId().toString()))
             .body(result);
     }
 
-    /**
-     * PUT  /game-users : Updates an existing gameUser.
-     *
-     * @param gameUser the gameUser to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated gameUser,
-     * or with status 400 (Bad Request) if the gameUser is not valid,
-     * or with status 500 (Internal Server Error) if the gameUser couldnt be updated
-     * @throws URISyntaxException if the Location URI syntax is incorrect
-     */
+
     @PutMapping("/game-users")
     @Timed
     public ResponseEntity<GameUser> updateGameUser(@RequestBody GameUser gameUser) throws URISyntaxException {
@@ -81,11 +101,6 @@ public class GameUserResource {
             .body(result);
     }
 
-    /**
-     * GET  /game-users : get all the gameUsers.
-     *
-     * @return the ResponseEntity with status 200 (OK) and the list of gameUsers in body
-     */
     @GetMapping("/game-users")
     @Timed
     public List<GameUser> getAllGameUsers() {
@@ -94,12 +109,7 @@ public class GameUserResource {
         return gameUsers;
     }
 
-    /**
-     * GET  /game-users/:id : get the "id" gameUser.
-     *
-     * @param id the id of the gameUser to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the gameUser, or with status 404 (Not Found)
-     */
+
     @GetMapping("/game-users/{id}")
     @Timed
     public ResponseEntity<GameUser> getGameUser(@PathVariable Long id) {
@@ -112,12 +122,7 @@ public class GameUserResource {
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    /**
-     * DELETE  /game-users/:id : delete the "id" gameUser.
-     *
-     * @param id the id of the gameUser to delete
-     * @return the ResponseEntity with status 200 (OK)
-     */
+
     @DeleteMapping("/game-users/{id}")
     @Timed
     public ResponseEntity<Void> deleteGameUser(@PathVariable Long id) {

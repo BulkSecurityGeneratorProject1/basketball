@@ -208,10 +208,4 @@ public class FavUserResource {
 
             return new ResponseEntity<>(result,HttpStatus.OK);
         }
-
-
-
-
-
-
     }

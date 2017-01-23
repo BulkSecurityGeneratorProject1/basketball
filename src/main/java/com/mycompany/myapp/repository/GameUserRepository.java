@@ -3,11 +3,13 @@ package com.mycompany.myapp.repository;
 import com.mycompany.myapp.domain.Game;
 import com.mycompany.myapp.domain.GameUser;
 
+import com.mycompany.myapp.domain.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Spring Data JPA repository for the GameUser entity.
@@ -25,4 +27,6 @@ public interface GameUserRepository extends JpaRepository<GameUser,Long> {
     " GROUP BY gameUser order by avg(gameUser.points) desc")
 
     List<Object[]> fiveFavouriteGames(Pageable pageable);
+
+    Optional<GameUser> findByUserAndGame(User user, Game game);
 }

@@ -28,7 +28,7 @@ public interface FavUserRepository extends JpaRepository<FavUser,Long> {
 
     List <Object[]> findFiveFavouritePlayers(Pageable pageable);
 
-    @Query("select favUser.time from FavUser favUSer" +
+    @Query("select favUser.time from FavUser favUser" +
     " where favUser.player = :player")
 
     List<ZonedDateTime> favouriteEvolutionPlayer(@Param("player")Player player);
